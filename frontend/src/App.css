@@ -17,7 +17,7 @@ body {
   border-right: 1px solid #EBEBEB;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 30px;
 }
 
 .main-content {

@@ -1,5 +1,6 @@
 .mode-switcher {
-  display: inline-flex;
+  display: flex;
+  flex-direction: row;
   background-color: #f0f0f0;
   border-radius: 999px;
   height: 34px;
@@ -10,7 +11,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 16px;
+  padding: 0px 16px;
+  height: 100%;
   border: none;
   border-radius: 999px;
   font-family: 'e-Ukraine', sans-serif;
@@ -18,7 +20,7 @@
   font-style: normal;
   line-height: normal;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in;
 }
 
 .mode-button .icon {
@@ -30,13 +32,13 @@
 .mode-button.active {
   background-color: #000;
   color: #FFF;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .mode-button:not(.active) {
   background-color: transparent;
   color: #000;
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .mode-button.active .icon {
