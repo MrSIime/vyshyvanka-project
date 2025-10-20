@@ -1,32 +1,42 @@
-.mode-switcher-container {
-  display: flex;
-  background-color: #EBEBEB;
+.mode-switcher {
+  display: inline-flex;
+  background-color: #f0f0f0;
   border-radius: 999px;
-  padding: 4px;
-  border: 1px solid #DDDDDD;
+  height: 34px;
+  align-items: center;
 }
 
 .mode-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: 6px 16px;
   border: none;
   border-radius: 999px;
   font-family: 'e-Ukraine', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 13px;
+  font-style: normal;
+  line-height: normal;
   cursor: pointer;
-  background-color: transparent;
-  color: #000000;
   transition: all 0.2s ease-in-out;
 }
 
 .mode-button .icon {
+  width: 16px;
+  height: 16px;
   margin-right: 8px;
-  width: 20px;
-  height: 20px;
-  transition: all 0.2s ease-in-out;
+}
+
+.mode-button.active {
+  background-color: #000;
+  color: #FFF;
+  font-weight: 500;
+}
+
+.mode-button:not(.active) {
+  background-color: transparent;
+  color: #000;
+  font-weight: 400;
 }
 
 .mode-button.active .icon {

@@ -1,27 +1,26 @@
 import React from 'react';
 import './ModeSwitcher.css';
 
-// Імпортуємо SVG-іконки як React-компоненти
-import LocationIcon from '../../assets/icons/location.svg';
-import GraphIcon from '../../assets/icons/graph.svg';
+import LocationIcon from '../../assets/icons/location-outline.svg';
+import PaletteIcon from '../../assets/icons/palette.svg';
 
 function ModeSwitcher({ activeMode, onModeChange }) {
   return (
-    <div className="mode-switcher-container">
+    <div className="mode-switcher">
       <button
         className={`mode-button ${activeMode === 'vyshyvky' ? 'active' : ''}`}
         onClick={() => onModeChange('vyshyvky')}
       >
-        <img src={LocationIcon} className="icon" />
-        Вишивки
+        <img src={LocationIcon} className="icon" alt="" />
+        <span>Вишивки</span>
       </button>
 
       <button
         className={`mode-button ${activeMode === 'styles' ? 'active' : ''}`}
         onClick={() => onModeChange('styles')}
       >
-        <img src={GraphIcon} className="icon" />
-        Стилі
+        <img src={PaletteIcon} className="icon" alt="" />
+        <span>Стилі</span>
       </button>
     </div>
   );

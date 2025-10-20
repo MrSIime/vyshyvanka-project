@@ -6,21 +6,38 @@ body {
 
 .app-container {
   display: flex;
+  min-height: 100vh;
 }
 
 .left-panel {
-  width: 250px;
-  padding: 24px;
+  width: 300px;
+  padding: 40px;
+  background-color: #FFFFFF;
+  box-sizing: border-box;
+  border-right: 1px solid #EBEBEB;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 40px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
 }
 
 .logo {
   font-size: 24px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.main-content {
-  flex-grow: 1;
+#logo-title{
+  color: #000;
+  font-family: "e-Ukraine Head";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
