@@ -1,0 +1,74 @@
+.info-panel {
+  width: 376px;
+  height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  border-left: 1px solid #EBEBEB;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+}
+
+.info-title {
+  color: #000;
+  font-family: "e-Ukraine Head", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  color: #474747;
+  font-family: 'e-Ukraine', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.info-text {
+  color: #000;
+  font-family: 'e-Ukraine', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.info-link {
+  color: #CA4040;
+  font-family: 'e-Ukraine', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.info-button {
+  width: 181px;
+  height: 36px;
+  background-color: #000;
+  color: #FFF;
+  border: none;
+  border-radius: 8px;
+  font-family: 'e-Ukraine', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.info-button:hover {
+  opacity: 0.8;
+}

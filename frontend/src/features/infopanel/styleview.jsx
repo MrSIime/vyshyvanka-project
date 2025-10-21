@@ -11,10 +11,6 @@ function Styleview({ styleid, ongenerateclick }) {
       <h4>Ключові символи</h4>
       
       <h4>Кольори</h4>
-
-      <button className="button-generate" onClick={ongenerateclick}>
-        Згенерувати орнамент
-      </button>
     </div>
   );
 }

@@ -1,33 +1,10 @@
-import React, { useState } from 'react';
-import Vyshyvkaview from './vyshyvkaview';
-import Styleview from './styleview';
-import Generationview from './generationview';
-import './infopanel.css';
+import React from 'react';
 
-function Infopanel({ activemode, selectedartifactid, selectedstyleid }) {
-  const [isgenerating, setisgenerating] = useState(false);
-
-  if (isgenerating) {
-    return (
-      <Generationview
-        styleid={selectedstyleid}
-        onback={() => setisgenerating(false)}
-      />
-    );
-  }
-
-  if (activemode === 'vyshyvky' && selectedartifactid) {
-    return <Vyshyvkaview artifactid={selectedartifactid} />;
-  }
-
-  if (activemode === 'styles' && selectedstyleid) {
-    return <Styleview styleid={selectedstyleid} ongenerateclick={() => setisgenerating(true)} />;
-  }
-
+function Infopanel({ selectedartifactid }) {
   return (
-    <div className="info-panel placeholder">
-      <h3>Оберіть об'єкт на карті</h3>
-      <p>Клікніть на артефакт або регіон, щоб побачити детальну інформацію.</p>
+    <div>
+      <h3>Інформаційна панель</h3>
+      <p>ID обраного артефакту: {selectedartifactid}</p>
     </div>
   );
 }
