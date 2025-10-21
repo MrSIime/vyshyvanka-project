@@ -12,7 +12,7 @@ body {
 /* LEFT PANEL */
 
 .left-sidebar {
-  width: 300px;
+  width: 200px;
   padding: 40px;
   background-color: #FFFFFF;
   box-sizing: border-box;
@@ -24,12 +24,13 @@ body {
 
 .main-content {
   flex-grow: 1;
-  padding: 40px;
+  padding: 10px;
 }
 
-.logo {
+.logo-container {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 12px;
 }
 
@@ -40,6 +41,7 @@ body {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  white-space: nowrap;
 }
 
 .analysis-button {
@@ -67,8 +69,8 @@ body {
 /* RIGHT SIDE BAR */
 
 .right-sidebar {
-  width: 350px;
-  padding: 35px;
+  width: 320px;
+  padding: 30px;
   background-color: #FFFFFF;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -77,3 +79,9 @@ body {
 }
 
 /* MAP PANEL */
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
