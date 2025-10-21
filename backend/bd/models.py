@@ -13,7 +13,7 @@ def create_empty_znakhidky_db_single_table():
                 location TEXT,
                 location_x REAL,
                 location_y REAL,
-                style_id TEXT,
+                style_id INTEGER,
                 description TEXT,
                 source_url TEXT,
                 photo_url TEXT,
