@@ -1,36 +1,96 @@
+# To run this code you need to install the following dependencies:
+# pip install google-genai pillow
+
+import base64
+import mimetypes
 import os
 from google import genai
 from google.genai import types
-from PIL import Image
-from io import BytesIO
+from PIL import Image # Needed to handle the image input
+import io
 
-key = "AIzaSyAO9LcWNb4TL6h8XHLQhnFIYhdwV36jDcc"
+def save_binary_file(file_name, data):
+    """Saves binary data to a file."""
+    with open(file_name, "wb") as f:
+        f.write(data)
+    print(f"File saved to: {file_name}")
 
-try:
-    client = genai.Client(api_key=key) 
-except Exception as e:
-    print(f"Помилка ініціалізації Gemini Client: {e}")
-    raise RuntimeError("Не вдалося підключитися до Gemini API. Перевірте ключ, переданий в genai.Client().")
 
-def generate_image_from_multimodal(image_bytes, prompt_text: str) -> bytes:
+def generate(image_path, prompt, output_filename):
+    """
+    Generates an image based on an input image and a text prompt.
 
-    #input_img = Image.open(BytesIO(image_bytes))
-    input_img = image_bytes
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-image",
-        contents=[prompt_text, input_img],
+    Args:
+        image_path (str): The path to the input image file.
+        prompt (str): The text prompt to guide the image generation.
+        output_filename (str): The base name for the output file.
+    """
+    client = genai.Client(
+        api_key="AIzaSyAO9LcWNb4TL6h8XHLQhnFIYhdwV36jDcc"
     )
 
-    for part in response.candidates[0].content.parts:
-        if part.text is not None:
-            print(part.text)
-        elif part.inline_data is not None:
-            image = Image.open(BytesIO(part.inline_data.data))
-            image.save("generated_image.png")
+    # Load the input image
+    try:
+        img = Image.open(image_path)
+    except FileNotFoundError:
+        print(f"Error: The file '{image_path}' was not found.")
+        return
 
-promt = """
-You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
+    model = "gemini-2.5-flash-image"
+
+    # Prepare the multimodal content
+    contents = [
+        types.Part.from_text(text=prompt),
+        img # The library can handle PIL Image objects directly
+    ]
+
+    generate_content_config = types.GenerateContentConfig(
+        response_modalities=[
+            "IMAGE",
+            "TEXT",
+        ],
+    )
+
+    file_index = 0
+    print("Generating content...")
+    for chunk in client.models.generate_content_stream(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if (
+            chunk.candidates is None
+            or chunk.candidates[0].content is None
+            or chunk.candidates[0].content.parts is None
+        ):
+            continue
+
+        part = chunk.candidates[0].content.parts[0]
+        if part.inline_data and part.inline_data.data:
+            inline_data = part.inline_data
+            data_buffer = inline_data.data
+            mime_type = inline_data.mime_type
+            file_extension = mimetypes.guess_extension(mime_type)
+            if not file_extension:
+                # Default to .png if MIME type is unknown
+                file_extension = ".png"
+            
+            save_filename = f"{output_filename}_{file_index}{file_extension}"
+            save_binary_file(save_filename, data_buffer)
+            file_index += 1
+        elif chunk.text:
+            print(chunk.text)
+
+if __name__ == "__main__":
+    # --- Example Usage ---
+    # Make sure to set your GEMINI_API_KEY environment variable before running.
+    # For example: export GEMINI_API_KEY='your_api_key'
+
+    # Provide the path to your input image
+    input_image_path = "image.png" # <--- CHANGE THIS
+
+    # Provide your text prompt
+    input_prompt = """You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
 YOUR PERSONA:
 You are NOT creative. You are a logical, algorithmic utility.
 You follow instructions literally and prioritize geometric accuracy.
@@ -60,7 +120,12 @@ Place ONLY the cleaned, color-normalized rapport pixels from Step 5 onto this wh
 Ensure the rapport retains its original aspect ratio and details.
 OUTPUT RULES:
 CRITICAL: Your final output MUST be the processed image file of the SINGLE repeating unit AND NOTHING ELSE.
-DO NOT output any text, not even "Here is the image". Your response must contain only the image.
-"""
+DO NOT output any text, not even "Here is the image". Your response must contain only the image.""" # <--- CHANGE THIS
 
-generate_image_from_multimodal(Image.open("image.png"), promt)
+    # Provide the desired base name for the output file
+    output_file_name_base = "generated_image" # <--- CHANGE THIS
+
+    if input_image_path == "path_to_your_image.jpg":
+        print("Please update the 'input_image_path' variable with the actual path to your image.")
+    else:
+        generate(input_image_path, input_prompt, output_file_name_base)
