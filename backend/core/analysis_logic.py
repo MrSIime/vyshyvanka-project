@@ -3,11 +3,13 @@ from google import genai
 from google.genai import types
 from PIL import Image
 from io import BytesIO
+from dotenv import load_dotenv
 
-key = "AIzaSyAznnbuLa9qYVADHSBG0-nDyXowbBDtn-s"
+load_dotenv()
+api_key = os.getenv("API_KEY_TEXT")
 
 try:
-    client = genai.Client(api_key=key) 
+    client = genai.Client(api_key=api_key) 
 except Exception as e:
     print(f"Помилка ініціалізації Gemini Client: {e}")
     raise RuntimeError("Не вдалося підключитися до Gemini API. Перевірте ключ, переданий в genai.Client().")

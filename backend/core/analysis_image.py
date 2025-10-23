@@ -1,13 +1,11 @@
-# To run this code you need to install the following dependencies:
-# pip install google-genai pillow
-
 import base64
 import mimetypes
 import os
 from google import genai
 from google.genai import types
-from PIL import Image # Needed to handle the image input
+from PIL import Image
 import io
+from dotenv import load_dotenv
 
 def save_binary_file(file_name, data):
     """Saves binary data to a file."""
@@ -25,11 +23,14 @@ def generate(image_path, prompt, output_filename):
         prompt (str): The text prompt to guide the image generation.
         output_filename (str): The base name for the output file.
     """
+
+    load_dotenv()
+    api_key = os.getenv("API_KEY_IMAGE")
+
     client = genai.Client(
-        api_key="AIzaSyAO9LcWNb4TL6h8XHLQhnFIYhdwV36jDcc"
+        api_key=api_key
     )
 
-    # Load the input image
     try:
         img = Image.open(image_path)
     except FileNotFoundError:
@@ -38,10 +39,9 @@ def generate(image_path, prompt, output_filename):
 
     model = "gemini-2.5-flash-image"
 
-    # Prepare the multimodal content
     contents = [
         types.Part.from_text(text=prompt),
-        img # The library can handle PIL Image objects directly
+        img
     ]
 
     generate_content_config = types.GenerateContentConfig(
@@ -72,7 +72,6 @@ def generate(image_path, prompt, output_filename):
             mime_type = inline_data.mime_type
             file_extension = mimetypes.guess_extension(mime_type)
             if not file_extension:
-                # Default to .png if MIME type is unknown
                 file_extension = ".png"
             
             save_filename = f"{output_filename}_{file_index}{file_extension}"
@@ -82,14 +81,8 @@ def generate(image_path, prompt, output_filename):
             print(chunk.text)
 
 if __name__ == "__main__":
-    # --- Example Usage ---
-    # Make sure to set your GEMINI_API_KEY environment variable before running.
-    # For example: export GEMINI_API_KEY='your_api_key'
+    input_image_path = "image.png"
 
-    # Provide the path to your input image
-    input_image_path = "image.png" # <--- CHANGE THIS
-
-    # Provide your text prompt
     input_prompt = """You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
 YOUR PERSONA:
 You are NOT creative. You are a logical, algorithmic utility.
@@ -120,10 +113,9 @@ Place ONLY the cleaned, color-normalized rapport pixels from Step 5 onto this wh
 Ensure the rapport retains its original aspect ratio and details.
 OUTPUT RULES:
 CRITICAL: Your final output MUST be the processed image file of the SINGLE repeating unit AND NOTHING ELSE.
-DO NOT output any text, not even "Here is the image". Your response must contain only the image.""" # <--- CHANGE THIS
+DO NOT output any text, not even "Here is the image". Your response must contain only the image."""
 
-    # Provide the desired base name for the output file
-    output_file_name_base = "generated_image" # <--- CHANGE THIS
+    output_file_name_base = "generated_image"
 
     if input_image_path == "path_to_your_image.jpg":
         print("Please update the 'input_image_path' variable with the actual path to your image.")
