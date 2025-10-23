@@ -9,29 +9,361 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px; /* Додаємо відступи на малих екранах */
 }
 
 .modal-content {
   background: white;
-  padding: 32px;
   border-radius: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px; /* Трохи збільшив ширину для кращого вигляду */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* Обмежуємо висоту */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0; /* Хедер не має стискатися */
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px; /* Трохи зменшив для балансу */
+  font-weight: 500;
 }
 
 .modal-close-button {
-  position: absolute;
-  top: 16px;
-  right: 16px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
-  color: #999;
+  color: #aaa;
+  line-height: 1;
+  padding: 0;
 }
 
 .modal-close-button:hover {
   color: #111;
+}
+
+/* Стилі для різних станів контенту */
+.idle-view, .loading-container, .result-view {
+    padding: 24px;
+}
+
+/* --- Стилі для стану Idle --- */
+.idle-view {
+  text-align: center;
+}
+.dropzone {
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  padding: 40px 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  margin-bottom: 24px;
+}
+.dropzone p {
+  margin: 0;
+  color: #888;
+  font-size: 15px;
+}
+.dropzone.active {
+  border-color: #C73F3F;
+  background-color: #fff8f8;
+}
+.upload-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+.upload-link {
+    color: #C73F3F;
+    text-decoration: none; /* Прибираємо підкреслення, бо воно є в дизайні */
+    font-weight: 500;
+}
+.file-preview {
+  border: 1px solid #e0e0e0; /* Зробимо тоншу рамку */
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.file-preview p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px;
+}
+.remove-file-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+  line-height: 1;
+  padding: 0;
+}
+.main-analyze-button {
+    width: 100%;
+}
+
+/* --- Стилі для стану Loading --- */
+.loading-container {
+    padding: 60px 20px;
+    text-align: center;
+}
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #C73F3F;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+.loading-note {
+    font-size: 14px;
+    color: #888;
+    margin-top: 8px;
+}
+
+/* --- Стилі для стану Success --- */
+.modal-body {
+    overflow-y: auto; /* Додаємо скрол тільки якщо контент не влазить */
+    flex-grow: 1; /* Тіло займає весь доступний простір */
+    padding: 0 24px; /* Горизонтальні відступи тіла */
+}
+/* Кастомний скролбар */
+.modal-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.modal-body::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 10px; }
+.modal-body::-webkit-scrollbar-thumb:hover { background: #b1b1b1; }
+
+.result-view {
+    padding: 24px 0; /* Вертикальні відступи всередині body */
+}
+.result-image-gallery {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    /* justify-content: center; */ /* Не центруємо, як в дизайні */
+}
+.result-image-container {
+  /* width: 100%; */ /* Не треба, бо галерея flex */
+  flex-basis: 60%; /* Орнамент займає більшу частину */
+  padding: 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.result-image {
+  max-width: 100%;
+  max-height: 150px;
+  height: auto;
+}
+/* Стилі для оригінального прев'ю, якщо додасте */
+.original-image-preview {
+    flex-basis: 40%;
+    max-width: 40%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.result-details {
+  margin-bottom: 24px;
+}
+.result-main-title {
+    font-size: 28px; /* Як в дизайні */
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+.details-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px 20px; /* Збільшив відстань */
+    align-items: start;
+}
+.detail-label {
+    font-size: 14px;
+    color: #888;
+    font-weight: 400; /* Зробимо звичайним */
+}
+.detail-value {
+    font-size: 16px;
+    color: #111;
+    font-weight: 500; /* Зробимо жирнішим */
+    line-height: 1.4; /* Трохи щільніше */
+}
+.detail-value.symbols {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.symbol-icon {
+    width: 20px;
+    height: 20px;
+}
+.colors-gallery-inline {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.color-swatch-inline {
+    width: 24px; /* Збільшимо */
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+}
+.divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 32px 0;
+}
+.result-section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 16px;
+}
+.similar-title {
+    margin-top: 0;
+}
+.similar-artifacts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.similar-artifact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #f0f0f0; /* Як в дизайні */
+    border-radius: 12px; /* Більше заокруглення */
+    border: none; /* Без рамки */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: left;
+    width: 100%;
+}
+.similar-artifact-item:hover {
+    background-color: #e5e5e5;
+}
+.similar-artifact-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.similar-artifact-info {
+    overflow: hidden;
+}
+.similar-artifact-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #111;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.similar-artifact-location {
+    font-size: 13px;
+    color: #777;
+    margin: 0;
+}
+
+/* --- Стилі для футера --- */
+.modal-footer {
+    padding: 24px;
+    border-top: 1px solid #eee;
+    background-color: #fff; /* Додамо фон, щоб перекривати контент */
+    flex-shrink: 0; /* Футер не має стискатися */
+}
+.success-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+.download-button {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центруємо контент */
+    gap: 8px;
+    padding: 10px 16px;
+    font-family: 'e-Ukraine Head', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #111;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 999px; /* Кругла кнопка */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-grow: 1; /* Щоб займала доступний простір */
+}
+.download-button:hover {
+    background-color: #f5f5f5;
+}
+.button-icon-small {
+    width: 16px;
+    height: 16px;
+}
+.analysis-action-button { /* Стилі для чорної кнопки */
+  width: auto; /* Автоматична ширина */
+  padding: 11px 24px; /* Відступи як в дизайні */
+  font-size: 15px;
+  background-color: #181818;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px; /* Кругла кнопка */
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: 'e-Ukraine Head', sans-serif;
+  flex-grow: 1; /* Щоб займала доступний простір */
+}
+.analysis-action-button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+.analysis-action-button:hover:not(:disabled) {
+  background-color: #333;
+}
+.new-analysis-button {
+    margin-top: 0;
+}
+
+/* --- Інше --- */
+.error-message {
+  color: #C73F3F;
+  font-size: 14px;
+  margin-top: 16px;
+}
+.error-message.centered {
+    text-align: center;
+    color: #888;
+    padding: 20px;
 }

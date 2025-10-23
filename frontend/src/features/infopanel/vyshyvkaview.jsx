@@ -11,7 +11,7 @@ function VyshyvkaView({ artifactId, onStyleClick }) {
     return <div>Артефакт не знайдено</div>;
   }
   
-  const style = styles.find(s => s.id === artifact.styleId);
+  const style = styles.find(s => s.id === artifact.style_id);
 
   return (
     <>
@@ -36,9 +36,13 @@ function VyshyvkaView({ artifactId, onStyleClick }) {
         </div>
         <div className="data-block">
           <span className="data-label">Стиль:</span>
-          <a href="#" className="data-link" onClick={() => onStyleClick(artifact.styleId)}>
+          {style ? (
+          <a href="#" className="data-link" onClick={() => onStyleClick(artifact.style_id)}>
             {style.name}
           </a>
+          ) : (
+            <span className="data-value">{"Не визначено"}</span> 
+          )}
         </div>
         <div className="data-block">
           <span className="data-label">Опис:</span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Infopanel from './features/infopanel/infopanel';
 import MapView from './features/map/mapview';
+import AnalysisModal from './features/analysis/analysismodal';
 import './App.css';
 import LogoIcon from './assets/icons/logo.svg';
 import SearchIcon from './assets/icons/search.svg';
@@ -18,6 +19,11 @@ function App() {
 
   const handleMarkerClick = (id) => {
     setSelectedId(id);
+  };
+
+  const handleNavigateFromModal = (artifactId) => {
+    setSelectedId(artifactId);
+    setModalOpen(false);
   };
 
   return (
@@ -38,7 +44,7 @@ function App() {
         <Infopanel selectedartifactid={selectedId} />
       </aside>
 
-      {/* {modalOpen && <AnalysisModal onClose={() => setModalOpen(false)} />} */}
+      {modalOpen && <AnalysisModal onClose={() => setModalOpen(false)} onNavigate={handleNavigateFromModal} />}
     </div>
   );
 }
