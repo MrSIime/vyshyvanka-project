@@ -7,6 +7,7 @@ from routers import artifacts
 import uvicorn
 from db.load_items import get_findings_from_db
 from core.analysis_logic import generate_text_from_multimodal
+from core.analysis_image import generate
 
 app = FastAPI(title="Vyshyvka API")
 
@@ -28,13 +29,16 @@ async def root():
 async def get_items():
     return {"text": get_findings_from_db()}
 
-@app.post("/upload/text")
-async def upload_image_and_get_text(file: UploadFile = File(...)):
+@app.post("/api/analysis")
+async def analysis(file: UploadFile = File(...)):
     try:
     
         image_bytes = await file.read()
 
-        return {"text": generate_text_from_multimodal(image_bytes)}
+        return {
+            "text": generate_text_from_multimodal(image_bytes),
+            "url": generate(image_bytes)
+            }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Не вдалося завантажити файл: {e}")
 

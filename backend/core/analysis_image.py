@@ -1,10 +1,11 @@
 import base64
+import random
 import mimetypes
 import os
 from google import genai
 from google.genai import types
 from PIL import Image
-import io
+from io import BytesIO
 from dotenv import load_dotenv
 
 def save_binary_file(file_name, data):
@@ -14,76 +15,10 @@ def save_binary_file(file_name, data):
     print(f"File saved to: {file_name}")
 
 
-def generate(image_path, prompt, output_filename):
-    """
-    Generates an image based on an input image and a text prompt.
+def generate(image_bytes):
+    img = Image.open(BytesIO(image_bytes))
 
-    Args:
-        image_path (str): The path to the input image file.
-        prompt (str): The text prompt to guide the image generation.
-        output_filename (str): The base name for the output file.
-    """
-
-    load_dotenv()
-    api_key = os.getenv("API_KEY_IMAGE")
-
-    client = genai.Client(
-        api_key=api_key
-    )
-
-    try:
-        img = Image.open(image_path)
-    except FileNotFoundError:
-        print(f"Error: The file '{image_path}' was not found.")
-        return
-
-    model = "gemini-2.5-flash-image"
-
-    contents = [
-        types.Part.from_text(text=prompt),
-        img
-    ]
-
-    generate_content_config = types.GenerateContentConfig(
-        response_modalities=[
-            "IMAGE",
-            "TEXT",
-        ],
-    )
-
-    file_index = 0
-    print("Generating content...")
-    for chunk in client.models.generate_content_stream(
-        model=model,
-        contents=contents,
-        config=generate_content_config,
-    ):
-        if (
-            chunk.candidates is None
-            or chunk.candidates[0].content is None
-            or chunk.candidates[0].content.parts is None
-        ):
-            continue
-
-        part = chunk.candidates[0].content.parts[0]
-        if part.inline_data and part.inline_data.data:
-            inline_data = part.inline_data
-            data_buffer = inline_data.data
-            mime_type = inline_data.mime_type
-            file_extension = mimetypes.guess_extension(mime_type)
-            if not file_extension:
-                file_extension = ".png"
-            
-            save_filename = f"{output_filename}_{file_index}{file_extension}"
-            save_binary_file(save_filename, data_buffer)
-            file_index += 1
-        elif chunk.text:
-            print(chunk.text)
-
-if __name__ == "__main__":
-    input_image_path = "image.png"
-
-    input_prompt = """You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
+    prompt = """You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
 YOUR PERSONA:
 You are NOT creative. You are a logical, algorithmic utility.
 You follow instructions literally and prioritize geometric accuracy.
@@ -115,9 +50,55 @@ OUTPUT RULES:
 CRITICAL: Your final output MUST be the processed image file of the SINGLE repeating unit AND NOTHING ELSE.
 DO NOT output any text, not even "Here is the image". Your response must contain only the image."""
 
-    output_file_name_base = "generated_image"
+    load_dotenv()
+    api_key = os.getenv("API_KEY_IMAGE")
 
-    if input_image_path == "path_to_your_image.jpg":
-        print("Please update the 'input_image_path' variable with the actual path to your image.")
-    else:
-        generate(input_image_path, input_prompt, output_file_name_base)
+    client = genai.Client(
+        api_key=api_key
+    )
+
+    model = "gemini-2.5-flash-image"
+
+    contents = [
+        types.Part.from_text(text=prompt),
+        img
+    ]
+
+    generate_content_config = types.GenerateContentConfig(
+        response_modalities=[
+            "IMAGE",
+            "TEXT",
+        ],
+    )
+
+    print("Generating content...")
+    for chunk in client.models.generate_content_stream(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if (
+            chunk.candidates is None
+            or chunk.candidates[0].content is None
+            or chunk.candidates[0].content.parts is None
+        ):
+            continue
+
+        part = chunk.candidates[0].content.parts[0]
+        if part.inline_data and part.inline_data.data:
+            inline_data = part.inline_data
+            data_buffer = inline_data.data
+            mime_type = inline_data.mime_type
+            file_extension = mimetypes.guess_extension(mime_type)
+            if not file_extension:
+                file_extension = ".png"
+            
+            filename = random.shuffle("gugseufvwegucfwwpxwur485438545948594385345095934chrvggrrsivgFWHIEFWENWDEWJNFHEFUIW")[:20]
+
+            url = f"'../../frontend/src/assets/analysis_image/'{filename}{file_extension}"
+
+            save_filename = url
+            save_binary_file(save_filename, data_buffer)
+            return url
+        elif chunk.text:
+            print(chunk.text)
