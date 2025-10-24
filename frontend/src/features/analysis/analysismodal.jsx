@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './analysismodal.css';
-import { artifacts as allArtifacts, styles } from '../infopanel/mockData';
+// ВИПРАВЛЕНИЙ ШЛЯХ: Тепер веде до єдиного файлу mockdata.js у корені src
+import { artifacts as allArtifacts, styles } from '../../mockdata.js';
 import UploadIcon from '../../assets/icons/upload.svg';
 import BirdIcon from '../../assets/icons/bird.svg';
 import DownloadIcon from '../../assets/icons/download.svg';
 
-const AnalysisResult = ({ analysisData, imageBase64, similarArtifacts, onNewAnalysis, onArtifactClick }) => (
+const AnalysisResult = ({ analysisData, imageBase64, similarArtifacts, onArtifactClick }) => (
   <div className="result-view modal-body">
     <div className="result-image-gallery">
        <div className="result-image-container">
@@ -67,7 +68,7 @@ const AnalysisResult = ({ analysisData, imageBase64, similarArtifacts, onNewAnal
             </div>
         </div>
     )}
-     {(!similarArtifacts || similarArtifacts.length === 0) && status === 'success' && (
+     {(!similarArtifacts || similarArtifacts.length === 0) && (
          <div>
             <h3 className="result-section-title similar-title">Схожі знахідки з Атласу</h3>
             <p className="no-similar-found">Схожих артефактів у базі не знайдено.</p>
@@ -84,17 +85,18 @@ const LoadingSpinner = () => (
   </div>
 );
 
-function findSimilarArtifacts(analysisStyle) {
-   if (!analysisStyle || !analysisStyle.id) return [];
+// Функція тепер приймає ID стилю, а не весь об'єкт
+function findSimilarArtifacts(styleId) {
+   if (!styleId) return [];
     return allArtifacts
-        .filter(artifact => artifact.style_id === analysisStyle.id)
+        .filter(artifact => artifact.style_id === styleId)
         .slice(0, 2);
 }
 
 function AnalysisModal({ onClose, onNavigate }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle');
-  const [resultImage, setResultImage] = useState('https://placehold.co/600x150/C73F3F/FFFFFF?text=Орнамент');
+  const [resultImage, setResultImage] = useState(null); // Починаємо з null, щоб не показувати placeholder
   const [analysisData, setAnalysisData] = useState(null);
   const [similarArtifacts, setSimilarArtifacts] = useState([]);
   const [error, setError] = useState(null);
@@ -103,6 +105,10 @@ function AnalysisModal({ onClose, onNavigate }) {
     const currentFile = acceptedFiles[0];
     if (currentFile) {
         setFile(currentFile);
+        // Показуємо прев'ю завантаженого зображення
+        const reader = new FileReader();
+        reader.onload = (e) => setResultImage(e.target.result);
+        reader.readAsDataURL(currentFile);
         setError(null);
     }
   }, []);
@@ -117,25 +123,37 @@ function AnalysisModal({ onClose, onNavigate }) {
     if (!file) return;
     setStatus('loading');
     setError(null);
-    setResultImage('https://placehold.co/600x150/C73F3F/FFFFFF?text=Орнамент'); // Reset ornament placeholder
     setAnalysisData(null);
     setSimilarArtifacts([]);
 
     setTimeout(() => {
         try {
-            const randomStyleIndex = Math.floor(Math.random() * styles.length);
-            const mockStyleAnalysis = styles[randomStyleIndex];
-            
-            mockStyleAnalysis.mockLocation = "Приклад області, Регіон"; 
+            // ВИПРАВЛЕНА ЛОГІКА: працюємо з об'єктом `styles`, а не масивом
+            const styleIds = Object.keys(styles).map(Number); // Отримуємо масив ID: [2, 4, 8]
+            const randomId = styleIds[Math.floor(Math.random() * styleIds.length)];
+            const randomStyleName = styles[randomId];
+
+            // Створюємо mock-об'єкт для аналізу
+            const mockStyleAnalysis = {
+                id: randomId,
+                name: randomStyleName,
+                mockLocation: "Приклад області, Регіон",
+                // Додаємо mock-дані, щоб компонент не був порожнім
+                key_elements: [{ name: 'Птахи', description: 'Символ свободи' }],
+                technique: 'Хрестик, низинка',
+                key_colors: [{ hex: '#CC0000', name: 'Червоний' }, { hex: '#000000', name: 'Чорний' }],
+            };
             
             setAnalysisData(mockStyleAnalysis);
 
-            const foundSimilar = findSimilarArtifacts(mockStyleAnalysis);
+            // Шукаємо схожі артефакти за ID стилю
+            const foundSimilar = findSimilarArtifacts(mockStyleAnalysis.id);
             setSimilarArtifacts(foundSimilar);
             
             setStatus('success');
         } catch (e) {
-            setError("Помилка обробки mock даних.");
+            console.error("Помилка обробки mock даних:", e);
+            setError("Сталася помилка під час аналізу.");
             setStatus('idle');
         }
     }, 1500);
@@ -144,7 +162,7 @@ function AnalysisModal({ onClose, onNavigate }) {
   const handleNewAnalysis = () => {
     setFile(null);
     setStatus('idle');
-    setResultImage('https://placehold.co/600x150/C73F3F/FFFFFF?text=Орнамент');
+    setResultImage(null);
     setAnalysisData(null);
     setSimilarArtifacts([]);
     setError(null);
@@ -153,9 +171,8 @@ function AnalysisModal({ onClose, onNavigate }) {
   const handleArtifactClick = (artifactId) => {
     if (onNavigate) {
         onNavigate(artifactId);
-    } else {
-        onClose();
     }
+    onClose(); // Завжди закриваємо модалку після кліку
   };
 
   const renderContent = () => {
@@ -164,7 +181,6 @@ function AnalysisModal({ onClose, onNavigate }) {
                 analysisData={analysisData}
                 imageBase64={resultImage}
                 similarArtifacts={similarArtifacts}
-                onNewAnalysis={handleNewAnalysis}
                 onArtifactClick={handleArtifactClick} 
              />;
     }
@@ -178,13 +194,13 @@ function AnalysisModal({ onClose, onNavigate }) {
         {file ? (
           <div className="file-preview">
             <p title={file.name}>{file.name}</p>
-            <button onClick={() => setFile(null)} className="remove-file-button">×</button>
+            <button onClick={handleNewAnalysis} className="remove-file-button">×</button>
           </div>
         ) : (
           <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
             <input {...getInputProps()} />
             <img src={UploadIcon} alt="upload" className="upload-icon"/>
-            <p>Перетягніть файл сюди або <span className="upload-link">натисніть</span></p>
+            <p>Перетягнітe файл сюди або <span className="upload-link">натисніть</span></p>
           </div>
         )}
         {error && <p className="error-message">{error}</p>}

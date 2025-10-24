@@ -1,22 +1,22 @@
-import React from 'react';
-import { MapContainer, GeoJSON, Marker } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, GeoJSON, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import ukraineGeoData from './ukraine-oblasts.json';
-import { artifacts } from '../infopanel/mockdata';
 import './MapView.css';
 
 const center = [48.3794, 31.1656];
 
+// ВИРІШЕННЯ №1: Оновлюємо стилі карти згідно з вашими кольорами
 const geoJsonStyle = {
-  fillColor: '#DCDCDC',
-  weight: 1.5,
-  color: '#FFFFFF',
+  fillColor: '#EDEDED', // Правильний колір заливки
+  weight: 1,             // Робимо контур тоншим для чистоти
+  color: '#959595',    // Правильний колір контуру
   fillOpacity: 1,
 };
 
 const customDotIcon = (isSelected) => {
-  const size = isSelected ? 12 : 8;
-  const color = '#111111';
+  const size = 8;
+  const color = isSelected ? '#D52B1E' : '#111111';
   
   const iconHtml = `
     <div 
@@ -25,8 +25,8 @@ const customDotIcon = (isSelected) => {
         height: ${size}px; 
         background-color: ${color}; 
         border-radius: 50%;
+        /* ВИРІШЕННЯ №2: Прибираємо тінь для простоти */
       "
-      class="${isSelected ? 'selected-marker' : ''}"
     ></div>
   `;
   
@@ -38,10 +38,25 @@ const customDotIcon = (isSelected) => {
   });
 };
 
-function MapView({ selectedId, onMarkerClick }) {
+const ResizeMapEffect = ({ isPanelOpen }) => {
+    const map = useMap();
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [isPanelOpen, map]);
+
+    return null;
+};
+
+
+function MapView({ artifacts, selectedId, onMarkerClick, isPanelOpen }) {
   return (
     <MapContainer center={center} zoom={6} scrollWheelZoom={true} zoomControl={false} className="map-container" attributionControl={false}>
       <GeoJSON data={ukraineGeoData} style={geoJsonStyle} />
+      
       {artifacts.map((item) => (
         <Marker
           key={item.id}
@@ -54,6 +69,8 @@ function MapView({ selectedId, onMarkerClick }) {
           }}
         />
       ))}
+
+      <ResizeMapEffect isPanelOpen={isPanelOpen} />
     </MapContainer>
   );
 }
