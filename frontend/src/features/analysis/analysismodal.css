@@ -2,368 +2,229 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px; /* Додаємо відступи на малих екранах */
+  z-index: 2000;
+  font-family: 'e-Ukraine', sans-serif;
 }
 
 .modal-content {
-  background: white;
+  background-color: #fff;
   border-radius: 16px;
-  width: 100%;
-  max-width: 600px; /* Трохи збільшив ширину для кращого вигляду */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 480px;
+  max-width: 95%;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  max-height: 90vh; /* Обмежуємо висоту */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 24px 16px 24px;
-    border-bottom: 1px solid #eee;
-    flex-shrink: 0; /* Хедер не має стискатися */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #EAEAEA;
+  flex-shrink: 0;
 }
 
 .modal-title {
-  margin: 0;
-  font-size: 20px; /* Трохи зменшив для балансу */
+  font-size: 16px; 
   font-weight: 500;
+  margin: 0;
 }
 
 .modal-close-button {
   background: none;
   border: none;
-  font-size: 28px;
+  font-size: 24px;
   cursor: pointer;
-  color: #aaa;
   line-height: 1;
-  padding: 0;
-}
-
-.modal-close-button:hover {
   color: #111;
 }
 
-/* Стилі для різних станів контенту */
-.idle-view, .loading-container, .result-view {
-    padding: 24px;
-}
-
-/* --- Стилі для стану Idle --- */
-.idle-view {
-  text-align: center;
-}
-.dropzone {
-  border: 2px dashed #e0e0e0;
-  border-radius: 12px;
-  padding: 40px 20px;
-  cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
-  margin-bottom: 24px;
-}
-.dropzone p {
-  margin: 0;
-  color: #888;
-  font-size: 15px;
-}
-.dropzone.active {
-  border-color: #C73F3F;
-  background-color: #fff8f8;
-}
-.upload-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 16px;
-    opacity: 0.4;
-}
-.upload-link {
-    color: #C73F3F;
-    text-decoration: none; /* Прибираємо підкреслення, бо воно є в дизайні */
-    font-weight: 500;
-}
-.file-preview {
-  border: 1px solid #e0e0e0; /* Зробимо тоншу рамку */
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 10px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  text-align: left;
-}
-.file-preview p {
-    margin: 0;
-    font-size: 14px;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 10px;
-}
-.remove-file-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #aaa;
-  line-height: 1;
-  padding: 0;
-}
-.main-analyze-button {
-    width: 100%;
-}
-
-/* --- Стилі для стану Loading --- */
-.loading-container {
-    padding: 60px 20px;
-    text-align: center;
-}
-.loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #C73F3F;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px auto;
-}
-.loading-note {
-    font-size: 14px;
-    color: #888;
-    margin-top: 8px;
-}
-
-/* --- Стилі для стану Success --- */
 .modal-body {
-    overflow-y: auto; /* Додаємо скрол тільки якщо контент не влазить */
-    flex-grow: 1; /* Тіло займає весь доступний простір */
-    padding: 0 24px; /* Горизонтальні відступи тіла */
-}
-/* Кастомний скролбар */
-.modal-body::-webkit-scrollbar { width: 6px; }
-.modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-.modal-body::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 10px; }
-.modal-body::-webkit-scrollbar-thumb:hover { background: #b1b1b1; }
-
-.result-view {
-    padding: 24px 0; /* Вертикальні відступи всередині body */
-}
-.result-image-gallery {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    /* justify-content: center; */ /* Не центруємо, як в дизайні */
-}
-.result-image-container {
-  /* width: 100%; */ /* Не треба, бо галерея flex */
-  flex-basis: 60%; /* Орнамент займає більшу частину */
-  padding: 10px;
-  background-color: #f8f8f8;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  box-sizing: border-box;
+  /* ВИРІШЕННЯ: Встановлюємо єдині правильні відступи */
+  padding: 24px 40px; 
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-}
-.result-image {
-  max-width: 100%;
-  max-height: 150px;
-  height: auto;
-}
-/* Стилі для оригінального прев'ю, якщо додасте */
-.original-image-preview {
-    flex-basis: 40%;
-    max-width: 40%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #eee;
+  gap: 20px;
+  overflow-y: auto;
+  box-sizing: border-box; /* Гарантує, що padding не буде додаватися до ширини */
 }
 
-.result-details {
-  margin-bottom: 24px;
-}
-.result-main-title {
-    font-size: 28px; /* Як в дизайні */
-    font-weight: 500;
-    margin-bottom: 24px;
-}
-.details-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 16px 20px; /* Збільшив відстань */
-    align-items: start;
-}
-.detail-label {
-    font-size: 14px;
-    color: #888;
-    font-weight: 400; /* Зробимо звичайним */
-}
-.detail-value {
-    font-size: 16px;
-    color: #111;
-    font-weight: 500; /* Зробимо жирнішим */
-    line-height: 1.4; /* Трохи щільніше */
-}
-.detail-value.symbols {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.symbol-icon {
-    width: 20px;
-    height: 20px;
-}
-.colors-gallery-inline {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-.color-swatch-inline {
-    width: 24px; /* Збільшимо */
-    height: 24px;
-    border-radius: 50%;
-    border: 1px solid #eee;
-}
-.divider {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 32px 0;
-}
-.result-section-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 16px;
-}
-.similar-title {
-    margin-top: 0;
-}
-.similar-artifacts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.similar-artifact-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background-color: #f0f0f0; /* Як в дизайні */
-    border-radius: 12px; /* Більше заокруглення */
-    border: none; /* Без рамки */
-    cursor: pointer;
-    transition: background-color 0.2s;
-    text-align: left;
-    width: 100%;
-}
-.similar-artifact-item:hover {
-    background-color: #e5e5e5;
-}
-.similar-artifact-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-.similar-artifact-info {
-    overflow: hidden;
-}
-.similar-artifact-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: #111;
-    margin: 0 0 4px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.similar-artifact-location {
-    font-size: 13px;
-    color: #777;
-    margin: 0;
-}
+/* ВИДАЛЕНО: Цей селектор більше не потрібен, бо ми керуємо шириною напряму */
+/* .modal-body > * { ... } */
 
-/* --- Стилі для футера --- */
-.modal-footer {
-    padding: 24px;
-    border-top: 1px solid #eee;
-    background-color: #fff; /* Додамо фон, щоб перекривати контент */
-    flex-shrink: 0; /* Футер не має стискатися */
-}
-.success-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-}
-.download-button {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Центруємо контент */
-    gap: 8px;
-    padding: 10px 16px;
-    font-family: 'e-Ukraine Head', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: #111;
-    background-color: transparent;
-    border: 1px solid #ccc;
-    border-radius: 999px; /* Кругла кнопка */
-    cursor: pointer;
-    transition: background-color 0.2s;
-    flex-grow: 1; /* Щоб займала доступний простір */
-}
-.download-button:hover {
-    background-color: #f5f5f5;
-}
-.button-icon-small {
-    width: 16px;
-    height: 16px;
-}
-.analysis-action-button { /* Стилі для чорної кнопки */
-  width: auto; /* Автоматична ширина */
-  padding: 11px 24px; /* Відступи як в дизайні */
-  font-size: 15px;
-  background-color: #181818;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 999px; /* Кругла кнопка */
+/* --- Dropzone & File Preview --- */
+.dropzone {
+  max-width: 360px;
+  width: 100%;
+  padding: 40px 20px;
+  border: 2px dashed #E0E0E0;
+  border-radius: 12px;
+  text-align: center;
   cursor: pointer;
   transition: background-color 0.2s;
-  font-family: 'e-Ukraine Head', sans-serif;
-  flex-grow: 1; /* Щоб займала доступний простір */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-sizing: border-box;
 }
-.analysis-action-button:disabled {
-  background-color: #e0e0e0;
-  cursor: not-allowed;
-}
-.analysis-action-button:hover:not(:disabled) {
-  background-color: #333;
-}
-.new-analysis-button {
-    margin-top: 0;
+.dropzone.active { background-color: #F5F5F5; }
+.dropzone p { margin: 0; font-size: 14px; color: #111; }
+.upload-link { color: #D52B1E; text-decoration: underline; }
+
+.file-preview {
+  max-width: 360px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-/* --- Інше --- */
-.error-message {
-  color: #C73F3F;
+.analyze-button {
+  max-width: 360px;
+  width: 100%;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: #111;
+  color: #fff;
+  font-family: 'e-Ukraine', sans-serif;
   font-size: 14px;
-  margin-top: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
-.error-message.centered {
-    text-align: center;
-    color: #888;
-    padding: 20px;
+.analyze-button:hover:not(:disabled) { background-color: #333; }
+.analyze-button:disabled { background-color: #E0E0E0; color: #9E9E9E; cursor: not-allowed; }
+
+/* --- Custom Checkbox --- */
+.terms-container { 
+  max-width: 360px;
+  width: 100%;
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-size: 14px; 
 }
+.terms-container a { color: #111; text-decoration: underline; }
+.terms-container input[type="checkbox"] { display: none; }
+.terms-container label { cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+.terms-container label::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid #111;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.terms-container input[type="checkbox"]:checked + label::before {
+  background-color: #111;
+  border-color: #111;
+  box-shadow: inset 0 0 0 2px #fff; 
+}
+
+/* --- Loading View --- */
+.loading-view { gap: 16px; padding: 80px 0; }
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #111;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- Result View --- */
+.result-view { align-items: stretch; gap: 16px; width: 100%; }
+.result-view > * { max-width: none; }
+
+.result-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-height: 200px;
+}
+.result-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  object-fit: cover;
+}
+
+.result-title { font-size: 24px; font-weight: 500; margin: 8px 0; }
+
+.result-details-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px 16px;
+  align-items: start;
+}
+.detail-label { font-size: 14px; color: #666; font-weight: 400; }
+.detail-value { font-size: 14px; font-weight: 500; margin: 0; }
+
+.symbols-container { display: flex; flex-direction: column; gap: 8px; }
+.symbol-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.techniques-container { display: flex; flex-direction: column; gap: 4px; }
+.colors-container { display: flex; gap: 8px; }
+.color-swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #E0E0E0; }
+
+.similar-finds-section { display: none; }
+
+.modal-footer {
+  padding: 20px 40px; /* Вирівнюємо відступи з .modal-body */
+  border-top: 1px solid #EAEAEA;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.footer-button {
+  flex-basis: 50%;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+.footer-button.primary { background-color: #111; color: #fff; border: 1px solid #111; }
+.footer-button.secondary { background-color: #fff; color: #111; border: 1px solid #E0E0E0; }
+.footer-button.secondary:hover { background-color: #f5f5f5; }
+.footer-button.primary:hover { background-color: #333; }
+
+.error-message { color: #D52B1E; font-size: 14px; text-align: center; }

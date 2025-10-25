@@ -5,37 +5,45 @@ import AnalysisModal from './features/analysis/analysismodal';
 import './App.css';
 import LogoIcon from './assets/icons/logo.svg';
 import SearchIcon from './assets/icons/search.svg';
-// Імпортуємо наші нові функції для роботи з API
+// ВИДАЛЯЄМО: import { artifacts } from './mockdata.js';
+// ДОДАЄМО: Імпортуємо наші нові функції для роботи з API
 import { fetchArtifactsForMap, fetchArtifactDetails } from './api.js';
 
 const AnalysisButton = ({ onClick }) => ( <button className="analysis-button" onClick={onClick}><img src={SearchIcon} alt="search" className="button-icon" /><span>Аналіз</span></button> );
 const ApiButton = () => ( <a href="#" className="api-button"><span>API</span><span>↗</span></a> );
 
 function App() {
-  const [artifacts, setArtifacts] = useState([]); // Стан для зберігання списку артефактів
-  const [selectedArtifact, setSelectedArtifact] = useState(null); // Стан для обраного артефакту
+  // Стан для зберігання списку артефактів, завантажених з API
+  const [artifacts, setArtifacts] = useState([]); 
+  // Стан для зберігання повної інформації про обраний артефакт
+  const [selectedArtifact, setSelectedArtifact] = useState(null); 
   const [selectedId, setSelectedId] = useState(null);
   
   const [modalOpen, setModalOpen] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // Цей ефект завантажує список артефактів для карти один раз при старті
+  // Цей ефект виконується один раз при завантаженні сторінки
   useEffect(() => {
-    const loadArtifacts = async () => {
+    const loadInitialData = async () => {
       try {
+        // 1. Завантажуємо дані для маркерів на карті
         const mapData = await fetchArtifactsForMap();
         setArtifacts(mapData);
-        // Автоматично вибираємо перший артефакт зі списку
-        if (mapData.length > 0) {
+
+        // 2. Якщо дані прийшли, автоматично вибираємо перший артефакт
+        if (mapData && mapData.length > 0) {
           handleMarkerClick(mapData[0].id);
         }
       } catch (error) {
-        console.error("Error loading artifacts for map:", error);
+        console.error("Не вдалося завантажити початкові дані:", error);
+        // Тут можна показати повідомлення про помилку для користувача
       }
     };
-    loadArtifacts();
-  }, []);
 
+    loadInitialData();
+  }, []); // Порожній масив означає, що ефект виконається лише один раз
+
+  // Ця функція тепер асинхронна, бо вона чекає на відповідь від API
   const handleMarkerClick = async (id) => {
     setSelectedId(id);
     try {
@@ -44,7 +52,7 @@ function App() {
       setSelectedArtifact(details);
       setIsPanelOpen(true);
     } catch (error) {
-      console.error(`Error loading artifact details for id ${id}:`, error);
+      console.error(`Не вдалося завантажити деталі для артефакту ${id}:`, error);
     }
   };
 
@@ -84,5 +92,3 @@ function App() {
 }
 
 export default App;
-
-  

@@ -59,7 +59,7 @@ async def get_artifact_by_id(artifact_id: int):
     style_name = None
     if artifact_dict.get("style_id"):
         query_style = "SELECT name FROM styles WHERE id = :id"
-        style_result = await database_styles.fetch_one(query=style, values={"id": artifact_dict["style_id"]})
+        style_result = await database_styles.fetch_one(query=query_style, values={"id": artifact_dict["style_id"]})
         if style_result:
             style_name = style_result["name"]
 

@@ -1,235 +1,131 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './analysismodal.css';
-// ВИПРАВЛЕНИЙ ШЛЯХ: Тепер веде до єдиного файлу mockdata.js у корені src
-import { artifacts as allArtifacts, styles } from '../../mockdata.js';
-import UploadIcon from '../../assets/icons/upload.svg';
-import BirdIcon from '../../assets/icons/bird.svg';
-import DownloadIcon from '../../assets/icons/download.svg';
+import { analyzeImage } from '../../api';
 
-const AnalysisResult = ({ analysisData, imageBase64, similarArtifacts, onArtifactClick }) => (
-  <div className="result-view modal-body">
-    <div className="result-image-gallery">
-       <div className="result-image-container">
-            {imageBase64 ? (
-                <img src={imageBase64} alt="extracted-ornament" className="result-image" />
-            ) : (
-                <p className="error-message centered">Немає орнаменту</p>
-            )}
-        </div>
-    </div>
-
-    {analysisData && (
-        <div className="result-details">
-            <h2 className="result-main-title">{analysisData.name || "Стиль не визначено"}</h2>
-            <div className="details-grid">
-                <span className="detail-label">Імовірне походження:</span>
-                <span className="detail-value">{analysisData.mockLocation || "-"}</span>
-
-                <span className="detail-label">Символи:</span>
-                <span className="detail-value symbols">
-                    {analysisData.key_elements?.map((el, i) => (
-                        <span key={i} title={el.description}>
-                            {el.name === 'Птахи' ? <img src={BirdIcon} alt="Птахи" className="symbol-icon"/> : el.name}
-                        </span>
-                     )) || "-"}
-                     {(!analysisData.key_elements || analysisData.key_elements.length === 0) && <span>-</span>}
-                </span>
-
-                <span className="detail-label">Ключові техніки:</span>
-                <span className="detail-value">{analysisData.technique || "-"}</span>
-
-                <span className="detail-label">Домінантні кольори:</span>
-                <div className="colors-gallery-inline">
-                    {analysisData.key_colors?.map((item, i) => (
-                    <div key={i} className="color-swatch-inline" style={{ backgroundColor: item.hex }} title={item.name}></div>
-                    ))}
-                    {(!analysisData.key_colors || analysisData.key_colors.length === 0) && <span>-</span>}
-                </div>
-            </div>
-        </div>
-    )}
-
-    <hr className="divider" />
-
-    {similarArtifacts?.length > 0 && (
-        <div>
-            <h3 className="result-section-title similar-title">Схожі знахідки з Атласу</h3>
-            <div className="similar-artifacts-list">
-                {similarArtifacts.map((artifact) => (
-                    <button key={artifact.id} className="similar-artifact-item" onClick={() => onArtifactClick(artifact.id)}>
-                        <img src={artifact.photo_url || 'https://placehold.co/80x80?text=?'} alt={artifact.title} className="similar-artifact-image" />
-                        <div className="similar-artifact-info">
-                            <h5 className="similar-artifact-title">{artifact.title}</h5>
-                            <p className="similar-artifact-location">{artifact.location}</p>
-                        </div>
-                    </button>
-                ))}
-            </div>
-        </div>
-    )}
-     {(!similarArtifacts || similarArtifacts.length === 0) && (
-         <div>
-            <h3 className="result-section-title similar-title">Схожі знахідки з Атласу</h3>
-            <p className="no-similar-found">Схожих артефактів у базі не знайдено.</p>
-         </div>
-     )}
-  </div>
-);
+// Іконки
+const UploadIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04ZM14 13V17H10V13H7L12 8L17 13H14Z" fill="#111111"/></svg> );
+const FileIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM18 20H6V4H13V9H18V20Z" fill="#111111"/></svg> );
+const DownloadIcon = () => ( <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 9H15V3H9V9H5L12 16L19 9ZM5 18V20H19V18H5Z" fill="black"/></svg> );
+const StarIcon = () => ( <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="black"/></svg> );
 
 const LoadingSpinner = () => (
-  <div className="loading-container">
+  <div className="modal-body loading-view">
     <div className="loading-spinner"></div>
     <p>Аналізуємо зображення...</p>
-    <p className="loading-note">Це може зайняти до хвилини</p>
   </div>
 );
 
-// Функція тепер приймає ID стилю, а не весь об'єкт
-function findSimilarArtifacts(styleId) {
-   if (!styleId) return [];
-    return allArtifacts
-        .filter(artifact => artifact.style_id === styleId)
-        .slice(0, 2);
-}
+const AnalysisResult = ({ result, originalImage, onNewAnalysis }) => {
+    const handleDownload = () => {
+        const link = document.createElement('a');
+        link.href = result.ornamentImage;
+        link.download = 'ornament.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
-function AnalysisModal({ onClose, onNavigate }) {
+    return (
+        <>
+            <div className="modal-body result-view">
+                <div className="result-gallery">
+                    <img src={URL.createObjectURL(originalImage)} alt="Original" className="result-image"/>
+                    <img src={result.ornamentImage} alt="Ornament" className="result-image"/>
+                </div>
+                <h2 className="result-title">{result.name}</h2>
+                <div className="result-details-grid">
+                    <p className="detail-label">Імовірне походження:</p>
+                    <p className="detail-value">{result.origin}</p>
+                    
+                    <p className="detail-label">Символи:</p>
+                    <div className="symbols-container">
+                        {result.symbols.map((symbol, i) => (
+                            <span key={i} className="symbol-item">
+                                <StarIcon/> {symbol}
+                            </span>
+                        ))}
+                    </div>
+
+                    <p className="detail-label">Ключові техніки:</p>
+                    <div className="techniques-container">
+                        {result.techniques.map((tech, i) => <p key={i} className="detail-value">{tech}</p>)}
+                    </div>
+
+                    <p className="detail-label">Домінантні кольори:</p>
+                    <div className="colors-container">
+                        {result.colors.map((color, i) => <div key={i} className="color-swatch" style={{ backgroundColor: color }}></div>)}
+                    </div>
+                </div>
+                
+                {/* Блок "Схожі знахідки" видалено згідно з прототипом */}
+            </div>
+            <div className="modal-footer">
+                <button className="footer-button secondary" onClick={handleDownload}><DownloadIcon/> орнамент</button>
+                <button className="footer-button primary" onClick={onNewAnalysis}>Новий аналіз</button>
+            </div>
+        </>
+    );
+};
+
+// Решта коду залишається без змін
+function AnalysisModal({ onClose }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle');
-  const [resultImage, setResultImage] = useState(null); // Починаємо з null, щоб не показувати placeholder
-  const [analysisData, setAnalysisData] = useState(null);
-  const [similarArtifacts, setSimilarArtifacts] = useState([]);
-  const [error, setError] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState(null);
 
-  const onDrop = useCallback(acceptedFiles => {
-    const currentFile = acceptedFiles[0];
-    if (currentFile) {
-        setFile(currentFile);
-        // Показуємо прев'ю завантаженого зображення
-        const reader = new FileReader();
-        reader.onload = (e) => setResultImage(e.target.result);
-        reader.readAsDataURL(currentFile);
-        setError(null);
-    }
-  }, []);
+  const onDrop = useCallback(acceptedFiles => { setFile(acceptedFiles[0]); }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 1 });
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { 'image/*': [] },
-    maxFiles: 1,
-  });
-
-  const handleAnalyze = () => {
-    if (!file) return;
+  const handleAnalyze = async () => {
+    if (!file || !termsAccepted) return;
     setStatus('loading');
-    setError(null);
-    setAnalysisData(null);
-    setSimilarArtifacts([]);
-
-    setTimeout(() => {
-        try {
-            // ВИПРАВЛЕНА ЛОГІКА: працюємо з об'єктом `styles`, а не масивом
-            const styleIds = Object.keys(styles).map(Number); // Отримуємо масив ID: [2, 4, 8]
-            const randomId = styleIds[Math.floor(Math.random() * styleIds.length)];
-            const randomStyleName = styles[randomId];
-
-            // Створюємо mock-об'єкт для аналізу
-            const mockStyleAnalysis = {
-                id: randomId,
-                name: randomStyleName,
-                mockLocation: "Приклад області, Регіон",
-                // Додаємо mock-дані, щоб компонент не був порожнім
-                key_elements: [{ name: 'Птахи', description: 'Символ свободи' }],
-                technique: 'Хрестик, низинка',
-                key_colors: [{ hex: '#CC0000', name: 'Червоний' }, { hex: '#000000', name: 'Чорний' }],
-            };
-            
-            setAnalysisData(mockStyleAnalysis);
-
-            // Шукаємо схожі артефакти за ID стилю
-            const foundSimilar = findSimilarArtifacts(mockStyleAnalysis.id);
-            setSimilarArtifacts(foundSimilar);
-            
-            setStatus('success');
-        } catch (e) {
-            console.error("Помилка обробки mock даних:", e);
-            setError("Сталася помилка під час аналізу.");
-            setStatus('idle');
-        }
-    }, 1500);
+    setError('');
+    try {
+      const analysisResult = await analyzeImage(file);
+      setResult(analysisResult);
+      setStatus('success');
+    } catch (err) {
+      setError(err.message || 'Сталася невідома помилка');
+      setStatus('error');
+    }
   };
-  
+
   const handleNewAnalysis = () => {
     setFile(null);
+    setResult(null);
+    setTermsAccepted(false);
     setStatus('idle');
-    setResultImage(null);
-    setAnalysisData(null);
-    setSimilarArtifacts([]);
-    setError(null);
-  };
-
-  const handleArtifactClick = (artifactId) => {
-    if (onNavigate) {
-        onNavigate(artifactId);
-    }
-    onClose(); // Завжди закриваємо модалку після кліку
   };
 
   const renderContent = () => {
-    if (status === 'success') {
-      return <AnalysisResult 
-                analysisData={analysisData}
-                imageBase64={resultImage}
-                similarArtifacts={similarArtifacts}
-                onArtifactClick={handleArtifactClick} 
-             />;
-    }
-
-    if (status === 'loading') {
-      return <LoadingSpinner />;
-    }
+    if (status === 'loading') return <LoadingSpinner />;
+    if (status === 'success') return <AnalysisResult result={result} originalImage={file} onNewAnalysis={handleNewAnalysis} />;
 
     return (
-      <div className="idle-view">
+      <div className="modal-body">
         {file ? (
           <div className="file-preview">
-            <p title={file.name}>{file.name}</p>
-            <button onClick={handleNewAnalysis} className="remove-file-button">×</button>
+            <FileIcon />
+            <span>{file.name}</span>
           </div>
         ) : (
           <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
             <input {...getInputProps()} />
-            <img src={UploadIcon} alt="upload" className="upload-icon"/>
-            <p>Перетягнітe файл сюди або <span className="upload-link">натисніть</span></p>
+            <UploadIcon />
+            <p>Перетягніть файл сюди або <span className="upload-link">натисніть</span>, щоб завантажити</p>
           </div>
         )}
-        {error && <p className="error-message">{error}</p>}
-        <button 
-          className="analysis-action-button main-analyze-button" 
-          onClick={handleAnalyze} 
-          disabled={!file || status === 'loading'}
-        >
-          Аналізувати
-        </button>
+        <button className="analyze-button" onClick={handleAnalyze} disabled={!file || !termsAccepted}>Аналізувати</button>
+        <div className="terms-container">
+          <input type="checkbox" id="terms" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} />
+          <label htmlFor="terms">Я згоден з <a href="#">Умовами користування</a></label>
+        </div>
+        { (status === 'error') && <p className="error-message">{error}</p> }
       </div>
     );
-  };
-
-  const renderFooter = () => {
-    if (status === 'success') {
-      return (
-         <div className="modal-footer success-footer">
-            <button className="download-button" onClick={() => {/* Логіка завантаження */}}>
-                <img src={DownloadIcon} alt="download" className="button-icon-small"/>
-                <span>орнамент</span>
-            </button>
-            <button className="analysis-action-button new-analysis-button" onClick={handleNewAnalysis}>
-                Новий аналіз
-            </button>
-         </div>
-      );
-    }
-     return null; 
   };
 
   return (
@@ -240,7 +136,6 @@ function AnalysisModal({ onClose, onNavigate }) {
           <button className="modal-close-button" onClick={onClose}>×</button>
         </div>
         {renderContent()}
-        {renderFooter()}
       </div>
     </div>
   );

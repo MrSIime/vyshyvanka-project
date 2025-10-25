@@ -1,5 +1,4 @@
 import base64
-import random
 import mimetypes
 import os
 from google import genai
@@ -8,14 +7,11 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 
-def save_binary_file(file_name, data):
-    """Saves binary data to a file."""
-    with open(file_name, "wb") as f:
-        f.write(data)
-    print(f"File saved to: {file_name}")
+# ВИДАЛЕНО: Ця функція більше не потрібна
+# def save_binary_file(file_name, data): ...
 
-
-def generate(image_bytes):
+# Змінено назву функції для відповідності main.py
+def generate_ornament_base64(image_bytes: bytes) -> str:
     img = Image.open(BytesIO(image_bytes))
 
     prompt = """You are a high-precision, specialist computer vision tool focused on geometric embroidery pattern analysis and minimal repeating unit (rapport) extraction.
@@ -52,11 +48,12 @@ DO NOT output any text, not even "Here is the image". Your response must contain
 
     load_dotenv()
     api_key = os.getenv("API_KEY_IMAGE")
+    if not api_key:
+        raise ValueError("API_KEY_IMAGE не знайдено у .env файлі")
 
-    client = genai.Client(
-        api_key=api_key
-    )
+    client = genai.Client(api_key=api_key)
 
+    # ВИПРАВЛЕНО: ВИКОРИСТОВУЄМО САМЕ ВАШУ МОДЕЛЬ
     model = "gemini-2.5-flash-image"
 
     contents = [
@@ -71,7 +68,8 @@ DO NOT output any text, not even "Here is the image". Your response must contain
         ],
     )
 
-    print("Generating content...")
+    print(f"Generating content using YOUR model: {model}...")
+    # ВИКОРИСТОВУЄМО ВАШ ОРИГІНАЛЬНИЙ ПІДХІД ЗІ СТРІМОМ
     for chunk in client.models.generate_content_stream(
         model=model,
         contents=contents,
@@ -89,16 +87,12 @@ DO NOT output any text, not even "Here is the image". Your response must contain
             inline_data = part.inline_data
             data_buffer = inline_data.data
             mime_type = inline_data.mime_type
-            file_extension = mimetypes.guess_extension(mime_type)
-            if not file_extension:
-                file_extension = ".png"
             
-            filename = random.shuffle("gugseufvwegucfwwpxwur485438545948594385345095934chrvggrrsivgFWHIEFWENWDEWJNFHEFUIW")[:20]
+            # ЄДИНА ЗМІНА: Кодуємо байти зображення у Base64 і повертаємо як рядок
+            base64_image = base64.b64encode(data_buffer).decode('utf-8')
+            return f"data:{mime_type};base64,{base64_image}"
 
-            url = f"'../../frontend/src/assets/analysis_image/'{filename}{file_extension}"
-
-            save_filename = url
-            save_binary_file(save_filename, data_buffer)
-            return url
         elif chunk.text:
             print(chunk.text)
+    
+    raise ValueError("Не вдалося згенерувати зображення орнаменту зі стріму")
