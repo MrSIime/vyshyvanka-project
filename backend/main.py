@@ -1,15 +1,29 @@
-import aiofiles
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from db.database import connect_databases, disconnect_databases
-from routers import artifacts
+from routers import artifacts, analysis # Розділяємо логіку
 import uvicorn
-from db.load_items import get_findings_from_db
-from core.analysis_logic import generate_text_from_multimodal
-from core.analysis_image import generate
 
 app = FastAPI(title="Vyshyvka API")
+
+# НАЛАШТУВАННЯ CORS ДЛЯ ЗВ'ЯЗКУ З ФРОНТЕНДОМ
+# В майбутньому сюди треба буде додати URL вашого сайту на Vercel
+origins = [
+    "http://localhost:5173", # Дозвіл для локальної розробки
+    # "https://your-frontend-name.vercel.app", # Додасте це після деплою фронтенду
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Підключаємо роутери
+app.include_router(artifacts.router)
+# app.include_router(analysis.router) # Коли буде готовий роутер для аналізу
 
 @app.on_event("startup")
 async def startup():
@@ -19,28 +33,17 @@ async def startup():
 async def shutdown():
     await disconnect_databases()
 
-app.include_router(artifacts.router)
-
 @app.get("/")
 async def root():
-    return {"message": "API is running"}
+    return {"message": "Vyshyvka API is running"}
 
-@app.get("/api/get-items")
-async def get_items():
-    return {"text": get_findings_from_db()}
-
+# ПЕРЕНЕСІТЬ ЛОГІКУ АНАЛІЗУ В `routers/analysis.py`
+# А поки що залишимо тут для простоти
 @app.post("/api/analysis")
-async def analysis(file: UploadFile = File(...)):
-    try:
-    
-        image_bytes = await file.read()
+async def post_analysis(file: UploadFile = File(...)):
+    # ... ваш код аналізу ...
+    return {"message": "Analysis endpoint is working"}
 
-        return {
-            "text": generate_text_from_multimodal(image_bytes),
-            "url": generate(image_bytes)
-            }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Не вдалося завантажити файл: {e}")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
