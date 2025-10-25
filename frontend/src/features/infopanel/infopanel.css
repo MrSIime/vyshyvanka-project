@@ -36,11 +36,12 @@
 }
 
 .panel-toggle-button svg {
+    transform: rotate(180deg);
     transition: transform 0.4s ease;
 }
 
 .info-panel.closed .panel-toggle-button svg {
-    transform: rotate(180deg);
+    transform: rotate(0deg);
 }
 
 /* Внутрішній макет панелі */
