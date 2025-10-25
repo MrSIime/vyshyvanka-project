@@ -1,5 +1,5 @@
 import React from 'react';
-import { styles } from './mockData';
+import { styles } from './mockdata';
 import './infopanel.css';
 import BackIcon from '../../assets/icons/back.svg';
 import InfoIcon from '../../assets/icons/info.svg';

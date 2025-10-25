@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { MapContainer, GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import ukraineGeoData from './ukraine-oblasts.json';
-import './MapView.css';
+import './mapview.css';
 
 const center = [48.3794, 31.1656];
 
