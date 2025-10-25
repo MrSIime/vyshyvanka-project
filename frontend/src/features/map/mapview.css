@@ -29,3 +29,51 @@
 .leaflet-control-attribution {
   display: none;
 }
+
+/* --- ОНОВЛЕНІ СТИЛІ ДЛЯ ТУЛТІПУ --- */
+
+.custom-tooltip {
+  background-color: #FFFFFF;
+  border: none;
+  /* ВИРІШЕННЯ №3: Додаємо заокруглені кути */
+  border-radius: 12px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  font-family: 'e-Ukraine', sans-serif;
+  /* ВИРІШЕННЯ №1: Обмежуємо максимальну ширину */
+  max-width: 220px; 
+}
+
+/* Стиль для стрілочки тултіпу (тепер знизу) */
+.leaflet-tooltip-bottom.custom-tooltip::before {
+  border-bottom-color: #FFFFFF;
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tooltip-image {
+  width: 100%;
+  height: auto;
+  /* ВИРІШЕННЯ №2: Обмежуємо максимальну висоту зображення */
+  max-height: 140px; 
+  object-fit: cover;
+  /* ВИРІШЕННЯ №3: Додаємо заокруглені кути для зображення */
+  border-radius: 8px; 
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  color: #111;
+}
+
+.tooltip-location {
+  font-size: 12px;
+  margin: 0;
+  color: #666;
+}

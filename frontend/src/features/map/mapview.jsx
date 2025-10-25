@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
-import { MapContainer, GeoJSON, Marker, useMap } from 'react-leaflet';
+import { MapContainer, GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import ukraineGeoData from './ukraine-oblasts.json';
 import './MapView.css';
 
 const center = [48.3794, 31.1656];
 
-// ВИРІШЕННЯ №1: Оновлюємо стилі карти згідно з вашими кольорами
 const geoJsonStyle = {
-  fillColor: '#EDEDED', // Правильний колір заливки
-  weight: 1,             // Робимо контур тоншим для чистоти
-  color: '#959595',    // Правильний колір контуру
+  fillColor: '#EDEDED',
+  weight: 1,
+  color: '#959595',
   fillOpacity: 1,
 };
 
@@ -25,7 +24,6 @@ const customDotIcon = (isSelected) => {
         height: ${size}px; 
         background-color: ${color}; 
         border-radius: 50%;
-        /* ВИРІШЕННЯ №2: Прибираємо тінь для простоти */
       "
     ></div>
   `;
@@ -67,7 +65,16 @@ function MapView({ artifacts, selectedId, onMarkerClick, isPanelOpen }) {
               onMarkerClick(item.id);
             },
           }}
-        />
+        >
+          {/* ВИРІШЕННЯ: Змінюємо напрямок та відступ */}
+          <Tooltip direction="bottom" offset={[0, 10]} opacity={1} permanent={false} className="custom-tooltip">
+            <div className="tooltip-content">
+              {item.photo_url && <img src={item.photo_url} alt={item.title} className="tooltip-image" />}
+              <h4 className="tooltip-title">{item.title}</h4>
+              <p className="tooltip-location">{item.location}</p>
+            </div>
+          </Tooltip>
+        </Marker>
       ))}
 
       <ResizeMapEffect isPanelOpen={isPanelOpen} />

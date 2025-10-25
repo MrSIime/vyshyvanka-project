@@ -7,10 +7,6 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 
-# ВИДАЛЕНО: Ця функція більше не потрібна
-# def save_binary_file(file_name, data): ...
-
-# Змінено назву функції для відповідності main.py
 def generate_ornament_base64(image_bytes: bytes) -> str:
     img = Image.open(BytesIO(image_bytes))
 
@@ -53,7 +49,6 @@ DO NOT output any text, not even "Here is the image". Your response must contain
 
     client = genai.Client(api_key=api_key)
 
-    # ВИПРАВЛЕНО: ВИКОРИСТОВУЄМО САМЕ ВАШУ МОДЕЛЬ
     model = "gemini-2.5-flash-image"
 
     contents = [
@@ -69,7 +64,6 @@ DO NOT output any text, not even "Here is the image". Your response must contain
     )
 
     print(f"Generating content using YOUR model: {model}...")
-    # ВИКОРИСТОВУЄМО ВАШ ОРИГІНАЛЬНИЙ ПІДХІД ЗІ СТРІМОМ
     for chunk in client.models.generate_content_stream(
         model=model,
         contents=contents,
@@ -88,7 +82,6 @@ DO NOT output any text, not even "Here is the image". Your response must contain
             data_buffer = inline_data.data
             mime_type = inline_data.mime_type
             
-            # ЄДИНА ЗМІНА: Кодуємо байти зображення у Base64 і повертаємо як рядок
             base64_image = base64.b64encode(data_buffer).decode('utf-8')
             return f"data:{mime_type};base64,{base64_image}"
 
