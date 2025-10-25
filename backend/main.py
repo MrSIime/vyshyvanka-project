@@ -47,10 +47,12 @@ async def analysis(file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
 
-        # 1. Отримуємо текстовий аналіз
         text_analysis_raw = generate_text_from_multimodal(image_bytes)
         
-        # 2. Парсимо текстову відповідь у структуровані дані
+
+        if text_analysis_raw[0]=="#":
+            return {"error": text_analysis_raw[1::]}
+
         lines = text_analysis_raw.strip().split('\n')
         analysis_data = {
             "name": lines[0].strip(),
@@ -60,10 +62,8 @@ async def analysis(file: UploadFile = File(...)):
             "colors": [c.strip() for c in lines[4].split('&')],
         }
 
-        # 3. Генеруємо зображення орнаменту
         ornament_base64 = generate_ornament_base64(image_bytes)
 
-        # 4. Повертаємо єдину JSON відповідь
         return {**analysis_data, "ornamentImage": ornament_base64}
 
     except Exception as e:
