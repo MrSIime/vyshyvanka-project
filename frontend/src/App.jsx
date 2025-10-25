@@ -1,49 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MapView from './features/map/mapview';
 import Infopanel from './features/infopanel/infopanel';
 import AnalysisModal from './features/analysis/analysismodal';
 import './App.css';
 import LogoIcon from './assets/icons/logo.svg';
 import SearchIcon from './assets/icons/search.svg';
-// Оновлений і правильний шлях до єдиного файлу з даними
-import { artifacts } from './mockdata.js';
+// Імпортуємо наші нові функції для роботи з API
+import { fetchArtifactsForMap, fetchArtifactDetails } from './api.js';
 
-const AnalysisButton = ({ onClick }) => (
-  <button className="analysis-button" onClick={onClick}>
-    <img src={SearchIcon} alt="search" className="button-icon" />
-    <span>Аналіз</span>
-  </button>
-);
-
-const ApiButton = () => (
-    <a href="#" className="api-button">
-      <span>API</span>
-      <span>↗</span>
-    </a>
-);
+const AnalysisButton = ({ onClick }) => ( <button className="analysis-button" onClick={onClick}><img src={SearchIcon} alt="search" className="button-icon" /><span>Аналіз</span></button> );
+const ApiButton = () => ( <a href="#" className="api-button"><span>API</span><span>↗</span></a> );
 
 function App() {
-  // Встановлюємо ID першого артефакту з нового масиву
-  const [selectedId, setSelectedId] = useState(artifacts[0]?.id || null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [isPanelOpen, setIsPanelOpen] = useState(true);
-
-  const handleMarkerClick = (id) => {
-    setSelectedId(id);
-    setIsPanelOpen(true);
-  };
-
-  const handleNavigateFromModal = (artifactId) => {
-    setSelectedId(artifactId);
-    setModalOpen(false);
-    setIsPanelOpen(true);
-  };
+  const [artifacts, setArtifacts] = useState([]); // Стан для зберігання списку артефактів
+  const [selectedArtifact, setSelectedArtifact] = useState(null); // Стан для обраного артефакту
+  const [selectedId, setSelectedId] = useState(null);
   
-  const handlePanelToggle = () => {
-    setIsPanelOpen(!isPanelOpen);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  // Цей ефект завантажує список артефактів для карти один раз при старті
+  useEffect(() => {
+    const loadArtifacts = async () => {
+      try {
+        const mapData = await fetchArtifactsForMap();
+        setArtifacts(mapData);
+        // Автоматично вибираємо перший артефакт зі списку
+        if (mapData.length > 0) {
+          handleMarkerClick(mapData[0].id);
+        }
+      } catch (error) {
+        console.error("Error loading artifacts for map:", error);
+      }
+    };
+    loadArtifacts();
+  }, []);
+
+  const handleMarkerClick = async (id) => {
+    setSelectedId(id);
+    try {
+      // Завантажуємо повну інформацію про обраний артефакт
+      const details = await fetchArtifactDetails(id);
+      setSelectedArtifact(details);
+      setIsPanelOpen(true);
+    } catch (error) {
+      console.error(`Error loading artifact details for id ${id}:`, error);
+    }
   };
 
-  const selectedArtifact = artifacts.find(artifact => artifact.id === selectedId);
+  const handlePanelToggle = () => setIsPanelOpen(!isPanelOpen);
 
   return (
     <div className="app-container">
@@ -73,9 +78,11 @@ function App() {
         />
       </main>
 
-      {modalOpen && <AnalysisModal onClose={() => setModalOpen(false)} onNavigate={handleNavigateFromModal} />}
+      {modalOpen && <AnalysisModal onClose={() => setModalOpen(false)} onNavigate={() => {}} />}
     </div>
   );
 }
 
 export default App;
+
+  
