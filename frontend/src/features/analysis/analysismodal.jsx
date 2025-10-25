@@ -89,7 +89,12 @@ function AnalysisModal({ onClose }) {
       setResult(analysisResult);
       setStatus('success');
     } catch (err) {
-      setError(err.message || 'Сталася невідома помилка');
+      if (err.message=="Failed to fetch") {
+        setError('Помилка: на фото не знайдено вишиванку');
+      }
+      else {
+        setError(err.message || 'Сталася невідома помилка');
+      }
       setStatus('error');
     }
   };

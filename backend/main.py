@@ -9,6 +9,7 @@ from typing import List, Optional
 # Імпортуємо оновлені функції
 from core.analysis_logic import generate_text_from_multimodal
 from core.analysis_image import generate_ornament_base64
+from core.if_contain import if_contain
 
 app = FastAPI(title="Vyshyvka API")
 
@@ -45,13 +46,13 @@ class AnalysisResponse(BaseModel):
 @app.post("/api/analysis", response_model=AnalysisResponse)
 async def analysis(file: UploadFile = File(...)):
     try:
+        
         image_bytes = await file.read()
 
-        text_analysis_raw = generate_text_from_multimodal(image_bytes)
+        if if_contain(image_bytes)=="-":
+            return {"error": "На фото немає вишиванкі"}
         
-
-        if text_analysis_raw[0]=="#":
-            return {"error": text_analysis_raw[1::]}
+        text_analysis_raw = generate_text_from_multimodal(image_bytes)
 
         lines = text_analysis_raw.strip().split('\n')
         analysis_data = {
