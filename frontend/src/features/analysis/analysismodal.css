@@ -21,6 +21,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  /* Додаємо overflow: hidden, щоб тінь не вилазила за межі заокруглених кутів */
+  overflow: hidden;
 }
 
 .modal-header {
@@ -28,7 +30,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid #959595;
   flex-shrink: 0;
 }
 
@@ -48,18 +50,36 @@
 }
 
 .modal-body {
-  /* ВИРІШЕННЯ: Встановлюємо єдині правильні відступи */
-  padding: 24px 40px; 
+  padding: 0; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  flex-grow: 1;
+  position: relative; /* Необхідно для псевдо-елемента */
+}
+
+/* ВИРІШЕННЯ: Псевдо-елемент, який перекриває тінь */
+.modal-body::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 24px; /* Висота, що дорівнює нижньому padding */
+  background: #fff; /* Колір фону модального вікна */
+  flex-shrink: 0;
+}
+
+.modal-body-content {
+  padding: 24px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  overflow-y: auto;
-  box-sizing: border-box; /* Гарантує, що padding не буде додаватися до ширини */
+  width: 100%;
+  box-sizing: border-box;
 }
-
-/* ВИДАЛЕНО: Цей селектор більше не потрібен, бо ми керуємо шириною напряму */
-/* .modal-body > * { ... } */
 
 /* --- Dropzone & File Preview --- */
 .dropzone {
@@ -164,14 +184,16 @@
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* --- Result View --- */
-.result-view { align-items: stretch; gap: 16px; width: 100%; }
-.result-view > * { max-width: none; }
+.result-view { align-items: stretch; gap: 0; width: 100%; }
+.result-view > .modal-body-content { gap: 16px; }
 
 .result-gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   max-height: 200px;
+  width: 100%;
+  overflow: hidden; 
 }
 .result-image {
   width: 100%;
@@ -181,38 +203,68 @@
   object-fit: cover;
 }
 
-.result-title { font-size: 24px; font-weight: 500; margin: 8px 0; }
-
-.result-details-grid {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 16px 16px;
-  align-items: start;
+.result-title {
+  font-family: 'e-Ukraine Head', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 8px 0;
+  width: 100%;
+  line-height: 1.2;
 }
-.detail-label { font-size: 14px; color: #666; font-weight: 400; }
-.detail-value { font-size: 14px; font-weight: 500; margin: 0; }
 
-.symbols-container { display: flex; flex-direction: column; gap: 8px; }
+.result-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.detail-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.detail-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+  width: 140px;
+  flex-shrink: 0;
+}
+.detail-value {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.result-divider {
+  height: 1px;
+  background-color: #959595; 
+  width: 100%;
+}
+
+.symbols-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px;}
 .symbol-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
 .techniques-container { display: flex; flex-direction: column; gap: 4px; }
-.colors-container { display: flex; gap: 8px; }
+.colors-container { display: flex; gap: 8px; align-items: center; align-self: center}
 .color-swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #E0E0E0; }
 
-.similar-finds-section { display: none; }
-
 .modal-footer {
-  padding: 20px 40px; /* Вирівнюємо відступи з .modal-body */
-  border-top: 1px solid #EAEAEA;
+  padding: 20px 40px;
+  border-top: 1px solid #959595; 
   display: flex;
   justify-content: space-between;
   gap: 16px;
   flex-shrink: 0;
+  position: relative; /* Необхідно для z-index */
+  z-index: 10; /* Щоб футер був вище за тінь */
+  background-color: #fff; /* Футер має мати фон */
 }
 .footer-button {
   flex-basis: 50%;
   height: 38px;
   padding: 0;
   border-radius: 999px;
+  font-family: 'e-Ukraine', sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;

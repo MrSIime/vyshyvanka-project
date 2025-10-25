@@ -9,12 +9,7 @@ const FileIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="n
 const DownloadIcon = () => ( <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 9H15V3H9V9H5L12 16L19 9ZM5 18V20H19V18H5Z" fill="black"/></svg> );
 const StarIcon = () => ( <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="black"/></svg> );
 
-const LoadingSpinner = () => (
-  <div className="modal-body loading-view">
-    <div className="loading-spinner"></div>
-    <p>Аналізуємо зображення...</p>
-  </div>
-);
+const LoadingSpinner = () => ( <div className="modal-body loading-view"><div className="loading-spinner"></div><p>Аналізуємо зображення...</p></div> );
 
 const AnalysisResult = ({ result, originalImage, onNewAnalysis }) => {
     const handleDownload = () => {
@@ -29,36 +24,45 @@ const AnalysisResult = ({ result, originalImage, onNewAnalysis }) => {
     return (
         <>
             <div className="modal-body result-view">
-                <div className="result-gallery">
-                    <img src={URL.createObjectURL(originalImage)} alt="Original" className="result-image"/>
-                    <img src={result.ornamentImage} alt="Ornament" className="result-image"/>
-                </div>
-                <h2 className="result-title">{result.name}</h2>
-                <div className="result-details-grid">
-                    <p className="detail-label">Імовірне походження:</p>
-                    <p className="detail-value">{result.origin}</p>
+                <div className="modal-body-content">
+                    <div className="result-gallery">
+                        <img src={URL.createObjectURL(originalImage)} alt="Original" className="result-image"/>
+                        <img src={result.ornamentImage} alt="Ornament" className="result-image"/>
+                    </div>
                     
-                    <p className="detail-label">Символи:</p>
-                    <div className="symbols-container">
-                        {result.symbols.map((symbol, i) => (
-                            <span key={i} className="symbol-item">
-                                <StarIcon/> {symbol}
-                            </span>
-                        ))}
-                    </div>
-
-                    <p className="detail-label">Ключові техніки:</p>
-                    <div className="techniques-container">
-                        {result.techniques.map((tech, i) => <p key={i} className="detail-value">{tech}</p>)}
-                    </div>
-
-                    <p className="detail-label">Домінантні кольори:</p>
-                    <div className="colors-container">
-                        {result.colors.map((color, i) => <div key={i} className="color-swatch" style={{ backgroundColor: color }}></div>)}
+                    <h2 className="result-title">{result.name}</h2>
+                    
+                    {/* НОВА СТРУКТУРА ДЛЯ ДЕТАЛЕЙ */}
+                    <div className="result-details-container">
+                        <div className="detail-row">
+                            <p className="detail-label">Імовірне походження:</p>
+                            <p className="detail-value">{result.origin}</p>
+                        </div>
+                        <div className="result-divider" />
+                        <div className="detail-row">
+                            <p className="detail-label">Символи:</p>
+                            <div className="symbols-container">
+                                {result.symbols.map((symbol, i) => (
+                                    <span key={i} className="symbol-item"><StarIcon/> {symbol}</span>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="result-divider" />
+                        <div className="detail-row">
+                            <p className="detail-label">Ключові техніки:</p>
+                            <div className="techniques-container">
+                                {result.techniques.map((tech, i) => <p key={i} className="detail-value">{tech}</p>)}
+                            </div>
+                        </div>
+                        <div className="result-divider" />
+                        <div className="detail-row">
+                            <p className="detail-label">Домінантні кольори:</p>
+                            <div className="colors-container">
+                                {result.colors.map((color, i) => <div key={i} className="color-swatch" style={{ backgroundColor: color }}></div>)}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                {/* Блок "Схожі знахідки" видалено згідно з прототипом */}
             </div>
             <div className="modal-footer">
                 <button className="footer-button secondary" onClick={handleDownload}><DownloadIcon/> орнамент</button>
@@ -106,24 +110,26 @@ function AnalysisModal({ onClose }) {
 
     return (
       <div className="modal-body">
-        {file ? (
-          <div className="file-preview">
-            <FileIcon />
-            <span>{file.name}</span>
+        <div className="modal-body-content">
+          {file ? (
+            <div className="file-preview">
+              <FileIcon />
+              <span>{file.name}</span>
+            </div>
+          ) : (
+            <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
+              <input {...getInputProps()} />
+              <UploadIcon />
+              <p>Перетягніть файл сюди або <span className="upload-link">натисніть</span>, щоб завантажити</p>
+            </div>
+          )}
+          <button className="analyze-button" onClick={handleAnalyze} disabled={!file || !termsAccepted}>Аналізувати</button>
+          <div className="terms-container">
+            <input type="checkbox" id="terms" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} />
+            <label htmlFor="terms">Я згоден з <a href="#">Умовами користування</a></label>
           </div>
-        ) : (
-          <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
-            <input {...getInputProps()} />
-            <UploadIcon />
-            <p>Перетягніть файл сюди або <span className="upload-link">натисніть</span>, щоб завантажити</p>
-          </div>
-        )}
-        <button className="analyze-button" onClick={handleAnalyze} disabled={!file || !termsAccepted}>Аналізувати</button>
-        <div className="terms-container">
-          <input type="checkbox" id="terms" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} />
-          <label htmlFor="terms">Я згоден з <a href="#">Умовами користування</a></label>
+          { (status === 'error') && <p className="error-message">{error}</p> }
         </div>
-        { (status === 'error') && <p className="error-message">{error}</p> }
       </div>
     );
   };
