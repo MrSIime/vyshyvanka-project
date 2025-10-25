@@ -66,8 +66,13 @@ function MapView({ artifacts, selectedId, onMarkerClick, isPanelOpen }) {
             },
           }}
         >
-          {/* ВИРІШЕННЯ: Змінюємо напрямок та відступ */}
-          <Tooltip direction="bottom" offset={[0, 10]} opacity={1} permanent={false} className="custom-tooltip">
+          <Tooltip 
+            direction="bottom" 
+            offset={[0, 10]} 
+            opacity={1} 
+            permanent={false} 
+            className="custom-map-tooltip" 
+          >
             <div className="tooltip-content">
               {item.photo_url && <img src={item.photo_url} alt={item.title} className="tooltip-image" />}
               <h4 className="tooltip-title">{item.title}</h4>

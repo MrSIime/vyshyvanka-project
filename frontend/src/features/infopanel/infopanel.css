@@ -17,7 +17,6 @@
   transform: translateX(100%);
 }
 
-/* Стилі для кнопки згортання */
 .panel-toggle-button {
   position: absolute;
   left: -25px; 
@@ -44,7 +43,6 @@
     transform: rotate(0deg);
 }
 
-/* Внутрішній макет панелі */
 .info-panel-layout {
   height: 100%;
   display: flex;
@@ -64,14 +62,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px; /* Додаємо трохи місця для фону */
-  border-radius: 50%; /* Робимо фон круглим */
-  transition: background-color 0.2s ease; /* Плавна анімація */
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
 }
 
-/* ВИРІШЕННЯ №1: Ефект наведення для кнопки */
 .info-button:hover {
-  background-color: rgba(0, 0, 0, 0.1); /* 10% чорного */
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .info-panel-body {
@@ -79,19 +75,17 @@
   flex-grow: 1;
   overflow: hidden;
   
-  /* ВИРІШЕННЯ №2: Вертикальне центрування контенту */
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .info-panel-footer {
-  padding: 20px 40px 40px 40px;
+  padding: 20px 40px 40px 40px; /* не чіпать виглядає по тупому */
   flex-shrink: 0;
   text-align: left;
 }
 
-/* Стилі контенту (шрифти, відступи) */
 .title {
   font-family: 'e-Ukraine Head', sans-serif;
   font-weight: 500;

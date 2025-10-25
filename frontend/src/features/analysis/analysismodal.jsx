@@ -3,7 +3,6 @@ import { useDropzone } from 'react-dropzone';
 import './analysismodal.css';
 import { analyzeImage } from '../../api';
 
-// Іконки
 const UploadIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04ZM14 13V17H10V13H7L12 8L17 13H14Z" fill="#111111"/></svg> );
 const FileIcon = () => ( <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM18 20H6V4H13V9H18V20Z" fill="#111111"/></svg> );
 const DownloadIcon = () => ( <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 9H15V3H9V9H5L12 16L19 9ZM5 18V20H19V18H5Z" fill="black"/></svg> );
@@ -31,8 +30,7 @@ const AnalysisResult = ({ result, originalImage, onNewAnalysis }) => {
                     </div>
                     
                     <h2 className="result-title">{result.name}</h2>
-                    
-                    {/* НОВА СТРУКТУРА ДЛЯ ДЕТАЛЕЙ */}
+
                     <div className="result-details-container">
                         <div className="detail-row">
                             <p className="detail-label">Імовірне походження:</p>
@@ -72,7 +70,6 @@ const AnalysisResult = ({ result, originalImage, onNewAnalysis }) => {
     );
 };
 
-// Решта коду залишається без змін
 function AnalysisModal({ onClose }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle');

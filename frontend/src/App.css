@@ -11,14 +11,12 @@ body {
   overflow: hidden;
 }
 
-/* LEFT PANEL */
 .left-sidebar {
-  width: 200px; /* Робимо панель трохи вужчою */
+  width: 200px;
   flex-shrink: 0;
   padding: 40px;
   background-color: #FFFFFF;
   box-sizing: border-box;
-  /* ВИРІШЕННЯ №1: Прибираємо лінію */
   border-right: none; 
   display: flex;
   flex-direction: column;
@@ -29,19 +27,18 @@ body {
 .left-sidebar-top {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Зменшуємо відстань */
+  gap: 10px;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 10px; /* Зменшуємо відстань */
+  gap: 10px;
   margin-bottom: 10px;
 }
 
 .logo-icon {
-  /* ВИРІШЕННЯ №2: Зменшуємо розмір іконки */
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -50,7 +47,6 @@ body {
 .logo-title {
   color: #000;
   font-family: "e-Ukraine";
-  /* ВИРІШЕННЯ №2: Зменшуємо розмір тексту */
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -62,7 +58,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* ВИРІШЕННЯ №2: Робимо кнопку компактнішою */
   gap: 8px;
   padding: 8px 14px;
   font-family: 'e-Ukraine', sans-serif;
@@ -85,7 +80,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* ВИРІШЕННЯ №2: Робимо кнопку компактнішою */
   gap: 8px;
   padding: 8px 14px;
   border-radius: 20px;
@@ -105,13 +99,10 @@ body {
 
 .social-handle {
   font-size: 12px;
-  /* ВИРІШЕННЯ №3: Робимо текст чорним */
   font-weight: 400;
   color: #000000;
 }
 
-
-/* MAIN CONTENT WRAPPER (MAP + INFOPANEL) */
 .main-content-wrapper {
   flex-grow: 1;
   position: relative;
