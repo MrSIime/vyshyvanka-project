@@ -12,7 +12,8 @@ from core.if_contain import if_contain
 
 app = FastAPI(title="Vyshyvka API")
 
-origins = ["http://localhost:5173", "https://vyshyvanka-project.vercel.app"]
+origins = ["https://vyshyvanka-project.vercel.app", "http://localhost:5173"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
