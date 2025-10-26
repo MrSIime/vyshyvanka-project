@@ -9,7 +9,7 @@ _Проєкт створено в рамках хакатону "Culture x Techn
 > https://vyshyvanka-project.vercel.app/
 
 > **Відео-демонстрація:**
-> 
+> https://youtu.be/NA3asltTKOk
 
 ## Команда
 * **Маслов Вадим:** Team lead, UI/UX Design, Frontend
