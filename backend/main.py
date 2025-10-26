@@ -6,15 +6,13 @@ import uvicorn
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Імпортуємо оновлені функції
 from core.analysis_logic import generate_text_from_multimodal
 from core.analysis_image import generate_ornament_base64
 from core.if_contain import if_contain
 
 app = FastAPI(title="Vyshyvka API")
 
-# Налаштування CORS
-origins = ["http://localhost:5173", "https://vyshyvka-atlas.vercel.app"] # Додайте URL з Vercel
+origins = ["http://localhost:5173", "https://vyshyvanka-project.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -32,8 +30,6 @@ async def shutdown():
     await disconnect_databases()
 
 app.include_router(artifacts.router)
-
-# --- НОВИЙ ЕНДПОІНТ АНАЛІЗУ ---
 
 class AnalysisResponse(BaseModel):
     name: str
