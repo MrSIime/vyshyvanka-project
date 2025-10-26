@@ -12,5 +12,5 @@ _Проєкт створено в рамках хакатону "Culture x Techn
 > 
 
 ## Команда
-* **Маслов Вадим:** UI/UX Design & Frontend
-* **Подгорський Костя:** Backend & AI
+* **Маслов Вадим:** Team lead, UI/UX Design, Frontend
+* **Подгорський Костя:** Backend, AI, Databases
